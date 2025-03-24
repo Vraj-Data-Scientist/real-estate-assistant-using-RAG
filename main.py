@@ -1,7 +1,7 @@
 import streamlit as st
 from rag import process_urls, generate_answer
 
-# Add Open Graph metadata with a valid image URL
+# Add Open Graph metadata
 st.markdown(
     """
     <meta property="og:title" content="Real Estate Research Tool">
@@ -14,16 +14,7 @@ st.markdown(
 
 st.title("Real Estate Research Tool")
 
-# # Add static content that loads immediately
-# st.markdown("""
-# ### Welcome to the Real Estate Research Tool
-# This tool helps you answer real estate questions by processing URLs you provide. Enter up to three URLs in the sidebar, click 'Process URLs', and then ask your question below.
-#
-# **How to Use:**
-# 1. Enter URLs in the sidebar.
-# 2. Click 'Process URLs' to load the data.
-# 3. Ask your question in the text box below.
-# """)
+
 
 url1 = st.sidebar.text_input("URL 1")
 url2 = st.sidebar.text_input("URL 2")
