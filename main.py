@@ -1,21 +1,12 @@
-
-
-
 import streamlit as st
 from rag import process_urls, generate_answer
 
 st.title("Real Estate Research Tool")
 
-# Add Open Graph metadata
-st.markdown(
-    """
-    <meta property="og:title" content="Real Estate Research Tool">
-    <meta property="og:description" content="A tool to answer real estate questions using provided URLs.">
-    <meta property="og:image" content="https://drive.google.com/drive/home?dmr=1&ec=wgc-drive-globalnav-goto">
-    <meta property="og:url" content="https://real-estate-assistant-using-rag-vraj-dobariya.streamlit.app/">
-    """,
-    unsafe_allow_html=True
-)
+# Add static content that loads immediately
+st.markdown("""
+### Welcome to the Real Estate Research Tool
+""")
 
 url1 = st.sidebar.text_input("URL 1")
 url2 = st.sidebar.text_input("URL 2")
