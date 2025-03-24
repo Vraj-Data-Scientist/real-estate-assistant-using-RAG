@@ -1,3 +1,9 @@
+import sys
+try:
+    __import__('pysqlite3')
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass  # Fallback to default sqlite3 if pysqlite3 isn’t available
 
 from uuid import uuid4
 from dotenv import load_dotenv

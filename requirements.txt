@@ -8,7 +8,4 @@ langchain-community
 protobuf
 langchain-huggingface
 chromadb
-langchain
-langchain-core
-langchain-text-splitters
-pypika
+pysqlite3-binary
