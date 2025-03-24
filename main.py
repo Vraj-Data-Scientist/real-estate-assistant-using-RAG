@@ -2,12 +2,12 @@ import streamlit as st
 from rag import process_urls, generate_answer
 
 # Set page config to provide a clear title
-st.set_page_config(
-    page_title="Real Estate Research Tool",
-    page_icon="🏠",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# st.set_page_config(
+#     page_title="Real Estate Research Tool",
+#     page_icon="🏠",
+#     layout="wide",
+#     initial_sidebar_state="expanded"
+# )
 
 # Add Open Graph metadata with a valid image URL
 st.markdown(
