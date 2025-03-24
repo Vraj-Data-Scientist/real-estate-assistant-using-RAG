@@ -6,7 +6,6 @@ except ImportError:
     pass  # Fallback to default sqlite3 if pysqlite3 isn’t available
 
 from uuid import uuid4
-from dotenv import load_dotenv
 from pathlib import Path
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain_community.document_loaders import UnstructuredURLLoader
@@ -15,7 +14,7 @@ from langchain_chroma import Chroma
 from langchain_groq import ChatGroq
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 
-load_dotenv()
+
 
 # Constants
 CHUNK_SIZE = 1000

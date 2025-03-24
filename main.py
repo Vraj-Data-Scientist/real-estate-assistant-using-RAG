@@ -3,11 +3,6 @@ from rag import process_urls, generate_answer
 
 st.title("Real Estate Research Tool")
 
-# Add static content that loads immediately
-st.markdown("""
-### Welcome to the Real Estate Research Tool
-""")
-
 url1 = st.sidebar.text_input("URL 1")
 url2 = st.sidebar.text_input("URL 2")
 url3 = st.sidebar.text_input("URL 3")
