@@ -1,7 +1,7 @@
 # 🏙️ **RealEstate Research Tool**
 
 We are going to build a user-friendly news research tool designed for effortless information retrieval. Users can input article URLs and ask questions to receive relevant insights from the real-estate domain. (But it's features can be extended to any domain.)
-![product screenshot](resources/image.png)
+![product screenshot](image.png)
 ### Features
 
 - Load URLs to fetch article content.
@@ -45,10 +45,7 @@ The web app will open in your browser after the set-up is complete.
 
 - One can now ask a question and get the answer based on those news articles
 
-- In the tutorial, we will use the following news articles
-  - https://www.cnbc.com/2024/12/21/how-the-federal-reserves-rate-policy-affects-mortgages.html
-  - https://www.cnbc.com/2024/12/20/why-mortgage-rates-jumped-despite-fed-interest-rate-cut.html
-  - https://www.cnbc.com/2024/12/17/wall-street-sees-upside-in-2025-for-these-dividend-paying-real-estate-stocks.html
+
 
 
 </br>
