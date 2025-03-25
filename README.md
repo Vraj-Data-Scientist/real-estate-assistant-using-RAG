@@ -1,14 +1,13 @@
 # 🏙️ **RealEstate Research Tool**
 
 We are going to build a user-friendly news research tool designed for effortless information retrieval. Users can input article URLs and ask questions to receive relevant insights from the real-estate domain. (But it's features can be extended to any domain.)
-![product screenshot](image.png)
+
 ### Features
 
 - Load URLs to fetch article content.
 - Process article content through LangChain's UnstructuredURL Loader
 - Construct an embedding vector using HuggingFace embeddings and leverage ChromaDB as the vectorstore, to enable swift and effective retrieval of relevant information.
 - Interact with the LLM's (Llama3 via Groq) by inputting queries and receiving answers along with source URLs.
-
 
 ### Set-up
 
@@ -46,7 +45,7 @@ The web app will open in your browser after the set-up is complete.
 - One can now ask a question and get the answer based on those news articles
 
 
-
+![product screenshot](image.png)
 
 </br>
 
