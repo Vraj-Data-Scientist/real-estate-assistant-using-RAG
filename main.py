@@ -1,4 +1,5 @@
 import streamlit as st
+import validators
 from rag import process_urls, generate_answer
 
 # Add Open Graph metadata
@@ -12,55 +13,95 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("Real Estate Research Tool")
+st.title("🏠 Real Estate Research Tool")
 
+# Predefined URLs
+PREDEFINED_URLS = {
+    "Mortgage News Daily (Rates)": "https://www.mortgagenewsdaily.com/mortgage-rates",
+    "Bankrate (Mortgages)": "https://www.bankrate.com/mortgages/"
+}
 
+# Initialize session state
+if "urls_processed" not in st.session_state:
+    st.session_state.urls_processed = False
+if "last_urls" not in st.session_state:
+    st.session_state.last_urls = []
+if "selected_predefined_urls" not in st.session_state:
+    st.session_state.selected_predefined_urls = []
 
-url1 = st.sidebar.text_input("URL 1")
-url2 = st.sidebar.text_input("URL 2")
-url3 = st.sidebar.text_input("URL 3")
+# Sidebar for URL input
+st.sidebar.header("📎 Provide Website URLs")
+st.sidebar.markdown("**Quick Start**: Select predefined URLs to test the app instantly! 🚀")
+selected_urls = st.sidebar.multiselect(
+    "🔗 Predefined URLs (select one or more)",
+    options=list(PREDEFINED_URLS.keys()),
+    default=st.session_state.selected_predefined_urls,
+    help="Choose these to quickly test the app with reliable sources!"
+)
+st.sidebar.markdown("**Or** enter custom URLs below:")
+url1 = st.sidebar.text_input("URL 1", value=st.session_state.last_urls[0] if len(st.session_state.last_urls) > 0 else "")
+url2 = st.sidebar.text_input("URL 2", value=st.session_state.last_urls[1] if len(st.session_state.last_urls) > 1 else "")
+url3 = st.sidebar.text_input("URL 3", value=st.session_state.last_urls[2] if len(st.session_state.last_urls) > 2 else "")
 
-placeholder = st.empty()
-
-with st.expander("How This Tool Supports You 🏠"):
+# Expander with vibrant guidance
+with st.expander("ℹ️ How This Tool Helps You!", expanded=True):
     st.markdown("""
-    This application answers your real estate questions using websites you provide.
+    **Your Real Estate Assistant!** 🏡 I answer questions using the websites you provide. Here’s the scoop:
 
-     It Works Well When ✅
-    - The website contains your answer (e.g., mortgage rates 💰), whether current or historical.
-      - *Example*: "What’s the current 30-year rate?" or "What was it on March 20, 2025?"—if the site includes that data.
+    **It Rocks When** ✅
+    - Sites have clear, text-based info (e.g., mortgage rates 💰, current or historical).
+    - *Examples*: "What’s the 30-year rate today?" or "What was it on March 20, 2025?"
 
-     It May Not Work When 🚫
-    - The website doesn’t have the information (e.g., a past rate on a current-only page).
-    - Data is in images 🖼️, tables, or requires a login 🔒.
-    - Certain sites (e.g., CNBC) restrict access 🌐⛔.
+    **It Struggles When** 🚫
+    - Info is missing, in images 🖼️, tables, or behind logins 🔒.
+    - Sites like CNBC block access 🌐⛔.
 
-     Helpful Tips 💡
-    - Choose websites with clear, text-based data 📝.
-    - Avoid pages with logins or restrictions.
+    **Pro Tips** 💡
+    - Try the predefined URLs above to test instantly! 🔗
+    - Use text-rich, public websites 📝.
+    - Process URLs before asking questions! 🚀
     """)
 
-
-
-process_url_button = st.sidebar.button("Process URLs")
+# Process URLs button
+process_url_button = st.sidebar.button("🔄 Process URLs")
 if process_url_button:
-    urls = [url for url in (url1, url2, url3) if url!='']
-    if len(urls) == 0:
-        placeholder.text("You must provide at least one valid url")
+    # Combine predefined and custom URLs
+    urls = [PREDEFINED_URLS[url] for url in selected_urls] + [url for url in (url1, url2, url3) if url.strip()]
+    if not urls:
+        st.error("🚨 Please provide at least one URL (predefined or custom)!")
     else:
-        for status in process_urls(urls):
-            placeholder.text(status)
+        # Validate URLs
+        invalid_urls = [url for url in urls if not validators.url(url)]
+        if invalid_urls:
+            st.error(f"🚫 Invalid URLs: {', '.join(invalid_urls)}")
+        else:
+            with st.spinner("🌐 Processing URLs..."):
+                try:
+                    for status in process_urls(urls):
+                        st.info(status)
+                    st.session_state.urls_processed = True
+                    st.session_state.last_urls = [url for url in (url1, url2, url3) if url.strip()]
+                    st.session_state.selected_predefined_urls = selected_urls
+                    st.success("🎉 URLs processed successfully!")
+                except Exception as e:
+                    st.error(f"😓 Error processing URLs: {str(e)}")
 
-query = placeholder.text_input("Question")
+# Query input
+query = st.text_input(
+    "💬 Ask Your Real Estate Question",
+    disabled=not st.session_state.urls_processed,
+    placeholder="E.g., 'What’s the current 30-year mortgage rate?'"
+)
 if query:
-    try:
-        answer, sources = generate_answer(query)
-        st.header("Answer:")
-        st.write(answer)
+    with st.spinner("🤖 Generating Answer..."):
+        try:
+            answer, sources = generate_answer(query)
+            st.header("📝 Answer:")
+            st.write(answer)
 
-        if sources:
-            st.subheader("Sources:")
-            for source in sources.split("\n"):
-                st.write(source)
-    except RuntimeError as e:
-        placeholder.text("You must process urls first")
+            if sources:
+                st.subheader("🔗 Sources:")
+                for source in sources.split("\n"):
+                    st.write(source)
+        except Exception as e:
+            st.error(f"😓 Error generating answer: {str(e)}")
