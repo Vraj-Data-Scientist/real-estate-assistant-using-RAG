@@ -38,10 +38,13 @@ selected_urls = st.sidebar.multiselect(
     default=st.session_state.selected_predefined_urls,
     help="Choose these to quickly test the app with reliable sources!"
 )
-st.sidebar.markdown("**Or** enter custom URLs below:")
-url1 = st.sidebar.text_input("URL 1", value=st.session_state.last_urls[0] if len(st.session_state.last_urls) > 0 else "")
-url2 = st.sidebar.text_input("URL 2", value=st.session_state.last_urls[1] if len(st.session_state.last_urls) > 1 else "")
-url3 = st.sidebar.text_input("URL 3", value=st.session_state.last_urls[2] if len(st.session_state.last_urls) > 2 else "")
+
+# Expander for custom URL inputs
+with st.sidebar.expander("🔗 Enter Custom Website Links", expanded=False):
+    st.markdown("**Paste your website links here!** 🌐 Add up to 3 custom URLs to search for answers.")
+    url1 = st.text_input("URL 1", value=st.session_state.last_urls[0] if len(st.session_state.last_urls) > 0 else "", key="url1")
+    url2 = st.text_input("URL 2", value=st.session_state.last_urls[1] if len(st.session_state.last_urls) > 1 else "", key="url2")
+    url3 = st.text_input("URL 3", value=st.session_state.last_urls[2] if len(st.session_state.last_urls) > 2 else "", key="url3")
 
 # Expander with vibrant guidance
 with st.expander("ℹ️ How This Tool Helps You!", expanded=True):
@@ -59,6 +62,7 @@ with st.expander("ℹ️ How This Tool Helps You!", expanded=True):
     **Pro Tips** 💡
     - Try the predefined URLs above to test instantly! 🔗
     - Use text-rich, public websites 📝.
+    - Expand the sidebar section to add custom links! 🌐
     - Process URLs before asking questions! 🚀
     """)
 
