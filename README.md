@@ -14,7 +14,7 @@ Experience the tool live at:
 
 Ask questions like:
 - ❓ "What’s the current 30-year mortgage rate?"
-- 📅 "What were mortgage rates on March 20, 2025?"
+- 📅 "What were mortgage rates on today?"
 
 ---
 
