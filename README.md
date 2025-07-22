@@ -329,7 +329,7 @@ Ask questions like:
 
 Developed by **Vraj Dobariya**, a data scientist passionate about building AI-driven solutions for real-world challenges. Connect with me on:
 - 📂 [GitHub](https://github.com/Vraj-Data-Scientist)
-- 🔗 [LinkedIn](https://www.linkedin.com/in/vraj-dobariya/) 
+- 🔗 [LinkedIn](https://www.linkedin.com/in/vraj-dobariya/)
 ---
 
 ## 🙌 Acknowledgments
