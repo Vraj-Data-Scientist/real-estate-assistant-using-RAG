@@ -2,6 +2,7 @@ python-dotenv
 streamlit
 unstructured
 tiktoken
+langchain
 langchain-chroma
 langchain-groq
 langchain-community
