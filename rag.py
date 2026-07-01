@@ -10,6 +10,7 @@ import nltk
 
 nltk.download("punkt")
 nltk.download("punkt_tab")
+nltk.download("averaged_perceptron_tagger_eng")
 
 from uuid import uuid4
 from pathlib import Path
