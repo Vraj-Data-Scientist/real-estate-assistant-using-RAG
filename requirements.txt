@@ -11,7 +11,7 @@ protobuf
 langchain-huggingface
 chromadb
 pysqlite3-binary
-protobuf==3.20.3
+torch
 validators
 sentence-transformers
 torchvision
