@@ -1,6 +1,6 @@
 python-dotenv
 streamlit
-unstructured
+unstructured==0.14.8
 tiktoken
 langchain
 langchain-classic
