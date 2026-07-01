@@ -5,6 +5,12 @@ try:
 except ImportError:
     pass  # Fallback to default sqlite3 if pysqlite3 isn’t available
 
+
+import nltk
+
+nltk.download("punkt")
+nltk.download("punkt_tab")
+
 from uuid import uuid4
 from pathlib import Path
 from langchain_classic.chains import RetrievalQAWithSourcesChain
