@@ -1,198 +1,205 @@
-import sys
+import streamlit as st
 import os
 
-from dotenv import load_dotenv
+from groq import Groq
+from langchain_groq import ChatGroq
 
-# Load variables from .env
-load_dotenv()
+
+st.title("🔍 Groq Debugging")
 
 
 # ============================================================
-# SQLite fix for ChromaDB
+# 1. Check Streamlit Secret
 # ============================================================
+
+st.header("1️⃣ Checking GROQ_API_KEY")
 
 try:
-    __import__("pysqlite3")
-    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
-except ImportError:
-    pass
+    api_key = st.secrets["GROQ_API_KEY"]
+
+    st.success("✅ GROQ_API_KEY found in Streamlit Secrets")
+
+    # NEVER display the complete key
+    st.write("Key exists:", bool(api_key))
+    st.write("Key prefix:", api_key[:7] + "..." if api_key else "None")
+
+except Exception as e:
+
+    st.error("❌ Could not read GROQ_API_KEY")
+
+    st.exception(e)
+
+    st.stop()
 
 
 # ============================================================
-# NLTK
+# 2. Test Groq Client
 # ============================================================
 
-import nltk
+st.header("2️⃣ Testing Groq API")
 
-nltk.download("punkt")
-nltk.download("punkt_tab")
-nltk.download("averaged_perceptron_tagger_eng")
+try:
 
-
-# ============================================================
-# LangChain imports
-# ============================================================
-
-from uuid import uuid4
-from pathlib import Path
-
-from langchain_classic.chains import RetrievalQAWithSourcesChain
-from langchain_community.document_loaders import UnstructuredURLLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
-from langchain_groq import ChatGroq
-from langchain_huggingface.embeddings import HuggingFaceEmbeddings
-
-
-# ============================================================
-# Constants
-# ============================================================
-
-CHUNK_SIZE = 1000
-
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-
-VECTORSTORE_DIR = Path(__file__).parent / "resources/vectorstore"
-
-COLLECTION_NAME = "real_estate"
-
-# Groq model
-GROQ_MODEL = "llama-3.1-8b-instant"
-
-
-# ============================================================
-# Global variables
-# ============================================================
-
-llm = None
-vector_store = None
-
-
-# ============================================================
-# Initialize Components
-# ============================================================
-
-def initialize_components():
-    global llm, vector_store
-
-    # --------------------------------------------------------
-    # Initialize Groq LLM
-    # --------------------------------------------------------
-
-    if llm is None:
-
-        groq_api_key = os.getenv("GROQ_API_KEY")
-
-        if not groq_api_key:
-            raise RuntimeError(
-                "GROQ_API_KEY is not configured. "
-                "Please add GROQ_API_KEY to your .env file."
-            )
-
-        llm = ChatGroq(
-            groq_api_key=groq_api_key,
-            model=GROQ_MODEL,
-            temperature=0.9,
-            max_tokens=500
-        )
-
-    # --------------------------------------------------------
-    # Initialize Embeddings + ChromaDB
-    # --------------------------------------------------------
-
-    if vector_store is None:
-
-        ef = HuggingFaceEmbeddings(
-            model_name=EMBEDDING_MODEL,
-            model_kwargs={
-                "trust_remote_code": True
-            }
-        )
-
-        vector_store = Chroma(
-            collection_name=COLLECTION_NAME,
-            embedding_function=ef,
-            persist_directory=str(VECTORSTORE_DIR)
-        )
-
-
-# ============================================================
-# Process URLs
-# ============================================================
-
-def process_urls(urls):
-    """
-    Scrape data from URLs, split the data into chunks,
-    generate embeddings, and store the chunks in ChromaDB.
-    """
-
-    yield "Initializing Components"
-    initialize_components()
-
-    yield "Resetting vector store...✅"
-    vector_store.reset_collection()
-
-    yield "Loading data...✅"
-
-    loader = UnstructuredURLLoader(
-        urls=urls
+    client = Groq(
+        api_key=api_key
     )
 
-    data = loader.load()
+    st.success("✅ Groq client created successfully")
 
-    yield "Splitting text into chunks...✅"
+except Exception as e:
 
-    text_splitter = RecursiveCharacterTextSplitter(
-        separators=[
-            "\n\n",
-            "\n",
-            ".",
-            " "
-        ],
-        chunk_size=CHUNK_SIZE
-    )
+    st.error("❌ Failed to create Groq client")
 
-    docs = text_splitter.split_documents(data)
+    st.exception(e)
 
-    yield "Add chunks to vector database...✅"
+    st.stop()
 
-    uuids = [
-        str(uuid4())
-        for _ in range(len(docs))
+
+# ============================================================
+# 3. Get Available Models
+# ============================================================
+
+st.header("3️⃣ Checking Available Models")
+
+try:
+
+    models = client.models.list()
+
+    model_names = [
+        model.id
+        for model in models.data
     ]
 
-    vector_store.add_documents(
-        docs,
-        ids=uuids
+    st.success(
+        f"✅ Groq returned {len(model_names)} models"
     )
 
-    yield "Done adding docs to vector database...✅"
+    st.write(model_names)
 
+    target_model = "llama-3.1-8b-instant"
 
-# ============================================================
-# Generate Answer
-# ============================================================
+    if target_model in model_names:
 
-def generate_answer(query):
-
-    if vector_store is None:
-        raise RuntimeError(
-            "Vector database is not initialized."
+        st.success(
+            f"✅ {target_model} is available"
         )
 
-    chain = RetrievalQAWithSourcesChain.from_llm(
-        llm=llm,
-        retriever=vector_store.as_retriever()
+    else:
+
+        st.error(
+            f"❌ {target_model} is NOT available for this API key"
+        )
+
+except Exception as e:
+
+    st.error("❌ Failed to retrieve Groq models")
+
+    st.exception(e)
+
+    st.stop()
+
+
+# ============================================================
+# 4. Direct Groq API Test
+# ============================================================
+
+st.header("4️⃣ Testing Direct Groq API")
+
+try:
+
+    response = client.chat.completions.create(
+
+        model="llama-3.1-8b-instant",
+
+        messages=[
+            {
+                "role": "user",
+                "content": "Say hello in one sentence."
+            }
+        ],
+
+        temperature=0
+
     )
 
-    result = chain.invoke(
-        {"question": query},
-        return_only_outputs=True
+    answer = response.choices[0].message.content
+
+    st.success("✅ Direct Groq API call worked")
+
+    st.write("Response:")
+    st.write(answer)
+
+except Exception as e:
+
+    st.error("❌ Direct Groq API call FAILED")
+
+    st.exception(e)
+
+
+# ============================================================
+# 5. Test LangChain ChatGroq
+# ============================================================
+
+st.header("5️⃣ Testing LangChain ChatGroq")
+
+try:
+
+    llm = ChatGroq(
+
+        groq_api_key=api_key,
+
+        model="llama-3.1-8b-instant",
+
+        temperature=0,
+
+        max_tokens=100
+
     )
 
-    sources = result.get(
-        "sources",
-        ""
+    st.success("✅ ChatGroq object created")
+
+    response = llm.invoke(
+        "Say hello in one sentence."
     )
 
-    return result["answer"], sources
+    st.success("✅ LangChain ChatGroq call worked")
+
+    st.write("Response:")
+    st.write(response.content)
+
+except Exception as e:
+
+    st.error("❌ LangChain ChatGroq call FAILED")
+
+    st.exception(e)
+
+
+# ============================================================
+# 6. Environment Variable Check
+# ============================================================
+
+st.header("6️⃣ Environment Variable Check")
+
+env_key = os.getenv("GROQ_API_KEY")
+
+if env_key:
+
+    st.success(
+        "✅ GROQ_API_KEY also exists as environment variable"
+    )
+
+    st.write(
+        "Environment key prefix:",
+        env_key[:7] + "..."
+    )
+
+else:
+
+    st.warning(
+        "⚠️ GROQ_API_KEY is NOT available through os.getenv()"
+    )
+
+st.info(
+    "This is okay if st.secrets works. "
+    "For Streamlit Cloud, we are directly using st.secrets."
+)
